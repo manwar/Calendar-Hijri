@@ -1,0 +1,37 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.73.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 15796f29f72634ac488f02976d06454882316247 Changes
+SHA1 00b0910e3de6a38588b8869e253d3db08b76e371 MANIFEST
+SHA1 a4f77f2a7583eda8640efb925d0864ba24f266f6 MANIFEST.SKIP
+SHA1 f8542833393e22370e5aa65fa4ea09b40239bd5f Makefile.PL
+SHA1 007c46265260d1ea9104c338300219bff2025d91 README
+SHA1 570bc9bf576d7d6abe53e5c4b836b06126f8b976 lib/Calendar/Hijri.pm
+SHA1 a51583cfe423ceef972597a79e151df9f75a47b9 t/00-load.t
+SHA1 8c5af70675020da74c9b11c67610525673fbdc28 t/01-test-case.t
+SHA1 77e94620687863d8ddc14d42fd3da6acb74d0a09 t/manifest.t
+SHA1 a0d45a25a5dcd941a0f02b9f3e8182ebe10e4953 t/pod.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJUFdHxAAoJENoXJXWo7C/pVBYIAM5E6Awal1Pk+IxYvuwXe9hs
+4tTqzmbNspFXiGCMwRrfkGH8lTJg3EwxRBtskcos5z9MP6KDLxxD8tYhG82/e5E1
+sAJahVDagW1prglzxquuMRlg8vvINMeDwMT2E+x73RR3TXnOxqIdIjszSWOaW0wA
+x0mskmQhMOCmUC63EUcQTtp7dO4b7JDajQkT0T7SZO8bjG8DSSENJNynBTBP/hcE
+7uRNiGPlw2xO2t8oYSRWhw6U+O/yFbU20qfafEqV8R5oNsHcFkCknlGtndJnjNwv
+a1VI6+K8vbwG+P/J4lQV2TMEVc1xxbl2o0j5ekAmbO7n1A+IV91A9Hq02oUj+0o=
+=UJoq
+-----END PGP SIGNATURE-----

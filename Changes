@@ -1,0 +1,33 @@
+Revision history for Calendar-Hijri
+
+0.07  Sun Sep 14 18:32:20 2014
+      - Deleted Build.PL file.
+      - Removed dependency of Readonly.pm and Carp.pm.
+      - Added section "REPOSITORY" to the pod
+      - Added key "META_MERGE" to Makefile.PL
+
+0.06  Tue Aug 09 16:21:11 2011
+      - Made Readonly v1.03 as minimum requirement.
+      - Prepared the distribution using the Module::Signature v0.68.
+
+0.05  Tue Apr 19 10:52:34 2011
+      - Added description to the pod of method days_so_far().
+
+0.04  Tue Apr 19 09:21:13 2011
+      - Fixed the typo in the description.
+
+0.03  Mon Apr 18 15:52:00 2011
+      - Renamed title "SYNOPSIS" to "DESCRIPTION".
+      - Renamed method days_in_year_month() to days_in_month().
+      - Renamed methos days_up_until_year_month() to days_so_far().
+      - Added example pod for method from_gregorian().
+      - Added example pod for method to_gregorian().
+      - Added example pod for method to_julian().
+      - Cosmetics changes.
+
+0.02  Tue Apr 12 12:37:37 2011
+      - Fixed the internal method _validate_date().
+      - Added unit test 01-test-case.t
+
+0.01  Mon Apr 11 18:34:23 2011
+        - First version released.
