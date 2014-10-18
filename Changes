@@ -1,5 +1,8 @@
 Revision history for Calendar-Hijri
 
+0.08  Sat Oct 18 22:30:19 2014
+      - Converted all files into unix format.
+
 0.07  Sun Sep 14 18:32:20 2014
       - Deleted Build.PL file.
       - Removed dependency of Readonly.pm and Carp.pm.
