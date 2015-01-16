@@ -1,5 +1,10 @@
 Revision history for Calendar-Hijri
 
+0.09  Fri Jan 16 14:55:10 2015
+      - Removed SIGNATURE file.
+      - Updated MANIFEST.SKIP file to ignore folder 'eumm/'.
+      - Updated Copyright year information.
+
 0.08  Sat Oct 18 22:30:19 2014
       - Converted all files into unix format.
 

@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.08';
+$Calendar::Hijri::VERSION = '0.09';
 
 =head1 NAME
 
@@ -8,10 +8,11 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
+use strict; use warnings;
 use Time::Local;
 use Data::Dumper;
 use Time::localtime;
@@ -516,7 +517,7 @@ L<http://search.cpan.org/dist/Calendar-Hijri/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2011 - 2014 Mohammad S Anwar.
+Copyright (C) 2011 - 2015 Mohammad S Anwar.
 
 This  program  is  free software; you can redistribute it and/or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a copy of the full
