@@ -1,5 +1,9 @@
 Revision history for Calendar-Hijri
 
+0.10  Mon Mar 16 13:30:10 2015
+      - Added LICENSE file.
+      - Tidied up pod document in general.
+
 0.09  Fri Jan 16 14:55:10 2015
       - Removed SIGNATURE file.
       - Updated MANIFEST.SKIP file to ignore folder 'eumm/'.

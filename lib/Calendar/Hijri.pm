@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.09';
+$Calendar::Hijri::VERSION = '0.10';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
@@ -68,22 +68,22 @@ NOTE: The Hijri date produced by this module can have +1/-1 day error.
 
 =head1 MONTHS
 
-    +--------+-----------------+
-    | Number | Name            |
-    +--------+-----------------+
-    |   1    | Muharram        |
-    |   2    | Safar           |
-    |   3    | Rabi' al-awwal  |
-    |   4    | Rabi' al-thani  |
-    |   5    | Jumada al-awwal |
-    |   6    | Jumada al-thani |
-    |   7    | Rajab           |
-    |   8    | Sha'aban        |
-    |   9    | Ramadan         |
-    |  10    | Shawwal         |
-    |  11    | Dhu al-Qi'dah   |
-    |  12    | Dhu al-Hijjah   |
-    +--------+-----------------+
+    +--------+------------------------------------------------------------------+
+    | Number | Name                                                             |
+    +--------+------------------------------------------------------------------+
+    |   1    | Muharram                                                         |
+    |   2    | Safar                                                            |
+    |   3    | Rabi' al-awwal                                                   |
+    |   4    | Rabi' al-thani                                                   |
+    |   5    | Jumada al-awwal                                                  |
+    |   6    | Jumada al-thani                                                  |
+    |   7    | Rajab                                                            |
+    |   8    | Sha'aban                                                         |
+    |   9    | Ramadan                                                          |
+    |  10    | Shawwal                                                          |
+    |  11    | Dhu al-Qi'dah                                                    |
+    |  12    | Dhu al-Hijjah                                                    |
+    +--------+------------------------------------------------------------------+
 
 =head1 METHODS
 
@@ -236,7 +236,8 @@ sub days_so_far {
 
 =head2 add_day()
 
-Returns new date in Hijri Calendar after adding the given number of day(s) to the original date.
+Returns new date in Hijri Calendar after adding the given number of day(s) to the
+original date.
 
     my $calendar = Calendar::Hijri->new(1432, 7, 27);
     print "Hijri Date 1:" . $calendar->as_string() . "\n";
@@ -263,8 +264,8 @@ sub add_day {
 
 =head2 get_calendar()
 
-Return  Hijri  Calendar  for the given month and year. In case of missing  month  and year, it
-would return current month Hijri Calendar.
+Return Hijri Calendar for the given month and year. In case of missing  month and
+year, it would return current month Hijri Calendar.
 
     use strict; use warnings;
     use Calendar::Hijri;
@@ -394,6 +395,10 @@ sub start_index {
     return $dow
 }
 
+#
+#
+# PRIVATE METHODS
+
 sub _gregorian_to_julian {
     my ($yyyy, $mm, $dd) = @_;
 
@@ -519,8 +524,8 @@ L<http://search.cpan.org/dist/Calendar-Hijri/>
 
 Copyright (C) 2011 - 2015 Mohammad S Anwar.
 
-This  program  is  free software; you can redistribute it and/or modify it under
-the  terms  of the the Artistic License (2.0). You may obtain a copy of the full
+This program  is  free software; you can redistribute it and / or modify it under
+the  terms  of the the Artistic License (2.0). You may obtain  a copy of the full
 license at:
 
 L<http://www.perlfoundation.org/artistic_license_2_0>

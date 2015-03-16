@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
@@ -14,10 +16,10 @@ WriteMakefile(
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
-    BUILD_REQUIRES => {
+    BUILD_REQUIRES   => {
         'Test::More' => 0,
     },
-    PREREQ_PM     => {
+    PREREQ_PM => {
         'Time::Local'     => '1.11',
         'Time::localtime' => '1.02',
         'List::Util'      => '1.21',
