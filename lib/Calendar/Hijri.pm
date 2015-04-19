@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.10';
+$Calendar::Hijri::VERSION = '0.11';
 
 =head1 NAME
 
@@ -8,46 +8,41 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-use strict; use warnings;
 use Time::Local;
 use Data::Dumper;
-use Time::localtime;
-use List::Util qw/min/;
-use POSIX qw/floor ceil/;
-use Date::Calc qw/Delta_Days Day_of_Week Add_Delta_Days/;
+use Term::ANSIColor::Markup;
+use Date::Hijri::Simple;
+use Date::Utils qw(
+    $HIJRI_YEAR
+    $HIJRI_MONTH
+    $HIJRI_MONTHS
+    $HIJRI_DAYS
 
-my $ISLAMIC_EPOCH   = 1948439.5;
-my $GREGORIAN_EPOCH = 1721425.5;
+    julian_to_hijri
+    gregorian_to_julian
+    days_in_hijri_month_year
+);
 
-my $MONTHS = [
-    undef,
-    q/Muharram/, q/Safar/   , q/Rabi' al-awwal/, q/Rabi' al-thani/, q/Jumada al-awwal/,  q/Jumada al-thani/,
-    q/Rajab/   , q/Sha'aban/, q/Ramadan/       , q/Shawwal/       , q/Dhu al-Qi'dah/   , q/Dhu al-Hijjah/   ];
+use Moo;
+use namespace::clean;
 
-my $LEAP_YEAR_MOD  = [ 2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29 ];
+use overload q{""} => 'as_string', fallback => 1;
 
-sub new {
-    my ($class, $yyyy, $mm, $dd) = @_;
+has year  => (is => 'rw', isa => $HIJRI_YEAR,  predicate => 1);
+has month => (is => 'rw', isa => $HIJRI_MONTH, predicate => 1);
 
-    my $self  = {};
-    bless $self, $class;
+sub BUILD {
+    my ($self) = @_;
 
-    if (defined($yyyy) && defined($mm) && defined($dd)) {
-        _validate_date($yyyy, $mm, $dd)
+    unless ($self->has_year && $self->has_month) {
+        my $date = Date::Hijri::Simple->new;
+        $self->year($date->year);
+        $self->month($date->month);
     }
-    else {
-        ($yyyy, $mm, $dd) = $self->today();
-    }
-
-    $self->{yyyy} = $yyyy;
-    $self->{mm}   = $mm;
-    $self->{dd}   = $dd;
-
-    return $self;
 }
 
 =head1 DESCRIPTION
@@ -66,7 +61,7 @@ drift with respect to the seasons, in a cycle 32.50 years.
 
 NOTE: The Hijri date produced by this module can have +1/-1 day error.
 
-=head1 MONTHS
+=head1 HIJRI MONTHS
 
     +--------+------------------------------------------------------------------+
     | Number | Name                                                             |
@@ -85,396 +80,131 @@ NOTE: The Hijri date produced by this module can have +1/-1 day error.
     |  12    | Dhu al-Hijjah                                                    |
     +--------+------------------------------------------------------------------+
 
+=head1 HIJRI DAYS
+
+    +--------------+------------------------------------------------------------+
+    | Arabic Name  | English Name                                               |
+    +--------------+------------------------------------------------------------+
+    |      al-Ahad | Sunday                                                     |
+    |   al-Ithnayn | Monday                                                     |
+    | ath-Thulatha | Tuesday                                                    |
+    |     al-Arbia | Wednesday                                                  |
+    |    al-Khamis | Thursday                                                   |
+    |    al-Jumuah | Friday                                                     |
+    |      as-Sabt | Saturday                                                   |
+    +--------------+------------------------------------------------------------+
+
 =head1 METHODS
 
-=head2 today()
+=head2 current()
 
-Return today's date is Hijri Calendar as list in the format yyyy,mm,dd.
+Returns current month of the Persian calendar.
 
     use strict; use warnings;
     use Calendar::Hijri;
 
-    my $calendar = Calendar::Hijri->new();
-    my ($yyyy, $mm, $dd) = $calendar->today();
-    print "Year [$yyyy] Month [$mm] Day [$dd]\n";
+    print Calendar::Hijri->new->current, "\n";
 
 =cut
 
-sub today {
+sub current {
     my ($self) = @_;
 
-    my $today = localtime;
-
-    return $self->from_gregorian($today->year+1900, $today->mon+1, $today->mday);
-}
-
-=head2 as_string()
-
-Return Hijri date in human readable format.
-
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    my $calendar = Calendar::Hijri->new(1432, 7, 27);
-    print "Hijri date is " . $calendar->as_string() . "\n";
-
-=cut
-
-sub as_string {
-    my ($self) = @_;
-
-    return sprintf("%02d, %s %04d", $self->{dd}, $MONTHS->[$self->{mm}], $self->{yyyy});
-}
-
-=head2 is_leap_year()
-
-Return 1 or 0 depending on whether the given year is a leap year or not in Hijri Calendar.
-
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    my $calendar = Calendar::Hijri->new(1432, 7, 27);
-    ($calendar->is_leap_year())
-    ?
-    (print "YES Leap Year\n")
-    :
-    (print "NO Leap Year\n");
-
-=cut
-
-sub is_leap_year {
-    my ($self, $yyyy) = @_;
-
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-
-    return unless defined $yyyy;
-
-    my $mod = $yyyy%30;
-    return 1 if grep/$mod/,@$LEAP_YEAR_MOD;
-    return 0;
-}
-
-=head2 days_in_year()
-
-Returns the number of days in the given year of Hijri Calendar.
-
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    my $calendar = Calendar::Hijri->new(1432, 7, 27);
-    print "Total number of days in year 1432: " . $calendar->days_in_year() . "\n";
-
-=cut
-
-sub days_in_year {
-    my ($self, $yyyy) = @_;
-
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-
-    return unless defined $yyyy;
-
-    ($self->is_leap_year($yyyy))
-    ?
-    (return 355)
-    :
-    (return 354);
-}
-
-=head2 days_in_month()
-
-Return number of days in the given year and month of Hijri Calendar.
-
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    my $calendar = Calendar::Hijri->new(1432,7,26);
-    print "Days is Rajab   1432: [" . $calendar->days_in_month() . "]\n";
-
-    print "Days is Shawwal 1432: [" . $calendar->days_in_month(1432, 8) . "]\n";
-
-=cut
-
-sub days_in_month {
-    my ($self, $yyyy, $mm) = @_;
-
-    $mm = $self->{mm}     unless defined $mm;
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-
-    return unless (defined($mm) && defined($yyyy));
-
-    return 30 if (($mm%2 == 1) || (($mm == 12) && ($self->is_leap_year($yyyy))));
-    return 29;
-}
-
-=head2 days_so_far()
-
-Returns number of days before the 1st of given year and month of Hijri Calendar.
-
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    my $calendar = Calendar::Hijri->new(1432, 7, 27);
-    print "Days before 01 Rajab    1432: " . $calendar->days_so_far()        . "\n";
-    print "Days before 01 Ramadaan 1432: " . $calendar->days_so_far(1432, 9) . "\n";
-
-=cut
-
-sub days_so_far {
-    my ($self, $yyyy, $mm) = @_;
-
-    $mm   = $self->{mm}   unless defined $mm;
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-    return unless (defined($mm) && defined($yyyy));
-
-    my $days = 0;
-    foreach (1..$mm) {
-        $days += $self->days_in_month($yyyy, $_);
-    }
-
-    return $days;
-}
-
-=head2 add_day()
-
-Returns new date in Hijri Calendar after adding the given number of day(s) to the
-original date.
-
-    my $calendar = Calendar::Hijri->new(1432, 7, 27);
-    print "Hijri Date 1:" . $calendar->as_string() . "\n";
-    $calendar->add_day(2);
-    print "Hijri Date 2:" . $calendar->as_string() . "\n";
-
-=cut
-
-sub add_day {
-    my ($self, $day, $dd, $mm, $yyyy) = @_;
-
-    $dd   = $self->{dd}   unless defined $dd;
-    $mm   = $self->{mm}   unless defined $mm;
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-
-    return unless (defined($dd) && defined($mm) && defined($yyyy));
-
-    foreach (1..$day) {
-        ($dd, $mm, $yyyy) = _add_day($self->days_in_month($yyyy, $mm), $dd, $mm, $yyyy);
-    }
-
-    return ($dd, $mm, $yyyy);
-}
-
-=head2 get_calendar()
-
-Return Hijri Calendar for the given month and year. In case of missing  month and
-year, it would return current month Hijri Calendar.
-
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    my $calendar = Calendar::Hijri->new(1432, 7, 27);
-    print $calendar->get_calendar();
-
-=cut
-
-sub get_calendar {
-    my ($self, $yyyy, $mm) = @_;
-
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-    $mm   = $self->{mm}   unless defined $mm;
-
-    my ($calendar, $start_index, $days);
-    $calendar = sprintf("\n\t%s [%04d]\n", $MONTHS->[$mm], $yyyy);
-    $calendar .= "\nSat  Sun  Mon  Tue  Wed  Thu  Fri\n";
-
-    $start_index = $self->start_index($yyyy, $mm);
-    $days = $self->days_in_month($yyyy, $mm);
-    map { $calendar .= "     " } (1..$start_index);
-    foreach (1 .. $days) {
-        $calendar .= sprintf("%3d  ", $_);
-        $calendar .= "\n" unless (($start_index+$_)%7);
-    }
-
-    return sprintf("%s\n\n", $calendar);
+    my $date = Date::Hijri::Simple->new;
+    return _calendar($date->year, $date->month);
 }
 
 =head2 from_gregorian()
 
 Converts given Gregorian date to Hijri date.
 
+    use strict; use warnings;
     use Calendar::Hijri;
 
-    my $calendar = Calendar::Hijri->new();
-    my ($yyyy, $mm, $dd) = $calendar->from_gregorian(2011, 3, 22);
+    print Calendar::Hijri->new->from_gregorian(2015, 4, 19);
 
 =cut
 
 sub from_gregorian {
-    my ($self, $yyyy, $mm, $dd) = @_;
+    my ($self, $year, $month, $day) = @_;
 
-    return $self->from_julian(_gregorian_to_julian($yyyy, $mm, $dd));
+    return $self->from_julian(gregorian_to_julian($year, $month, $day));
 }
 
+=head2 from_julian($julian_date)
 
-=head2 to_gregorian()
+Returns Hijri month calendar in which the given julian date falls in.
 
-Converts Hijri date to Gregorian date.
-
+    use strict; use warnings;
     use Calendar::Hijri;
 
-    my $calendar = Calendar::Hijri->new();
-    my ($yyyy, $mm, $dd) = $calendar->to_gregorian();
+    print Calendar::Hijri->new->from_julian(2457102.5), "\n";
 
 =cut
-
-sub to_gregorian {
-    my ($self, $yyyy, $mm, $dd) = @_;
-
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-    $mm   = $self->{mm}   unless defined $mm;
-    $dd   = $self->{dd}   unless defined $dd;
-
-    return _julian_to_gregorian($self->to_julian($yyyy, $mm, $dd));
-}
-
-=head2 to_julian()
-
-Converts Hijri date to Julian date.
-
-    use Calendar::Hijri;
-
-    my $calendar = Calendar::Hijri->new();
-    my $julian   = $calendar->to_julian();
-
-=cut
-
-sub to_julian {
-    my ($self, $yyyy, $mm, $dd) = @_;
-
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-    $mm   = $self->{mm}   unless defined $mm;
-    $dd   = $self->{dd}   unless defined $dd;
-
-    return ($dd +
-            ceil(29.5 * ($mm - 1)) +
-            ($yyyy - 1) * 354 +
-            floor((3 + (11 * $yyyy)) / 30) +
-            $ISLAMIC_EPOCH) - 1;
-}
 
 sub from_julian {
     my ($self, $julian) = @_;
 
-    $julian = floor($julian) + 0.5;
-    my $yyyy = floor(((30 * ($julian - $ISLAMIC_EPOCH)) + 10646) / 10631);
-    my $mm   = min(12, ceil(($julian - (29 + $self->to_julian($yyyy, 1, 1))) / 29.5) + 1);
-    my $dd   = ($julian - $self->to_julian($yyyy, $mm, 1)) + 1;
-
-    return ($yyyy, $mm, $dd);
+    my ($year, $month, $day) = julian_to_hijri($julian);
+    return _calendar($year, $month);
 }
 
-sub start_index {
-    my ($self, $yyyy, $mm) = @_;
+sub as_string {
+    my ($self) = @_;
 
-    $yyyy = $self->{yyyy} unless defined $yyyy;
-    $mm   = $self->{mm}   unless defined $mm;
-
-    my ($g_y, $g_m, $g_d) = $self->to_gregorian($yyyy, 1, 1);
-    my $dow = Day_of_Week($g_y, $g_m, $g_d);
-
-    return $dow if $mm == 1;
-    my $days = $self->days_so_far($yyyy, $mm-1);
-
-    for (1..$days) {
-        if ($dow != 6) {
-            $dow++;
-        }
-        else {
-            $dow = 0;
-        }
-    }
-
-    return $dow
+    return _calendar($self->year, $self->month);
 }
 
 #
 #
 # PRIVATE METHODS
 
-sub _gregorian_to_julian {
-    my ($yyyy, $mm, $dd) = @_;
+sub _calendar {
+    my ($year, $month) = @_;
 
-    return ($GREGORIAN_EPOCH - 1) +
-           (365 * ($yyyy - 1)) +
-           floor(($yyyy - 1) / 4) +
-           (-floor(($yyyy - 1) / 100)) +
-           floor(($yyyy - 1) / 400) +
-           floor((((367 * $mm) - 362) / 12) +
-           (($mm <= 2) ? 0 : (_is_leap($yyyy) ? -1 : -2)) +
-           $dd);
-}
+    my $date = Date::Hijri::Simple->new({ year => $year, month => $month, day => 1 });
+    my $start_index = $date->day_of_week;
+    my $days = days_in_hijri_month_year($month, $year);
 
-sub _julian_to_gregorian {
-    my ($julian) = @_;
+    my $line1 = '<blue><bold>+' . ('-')x104 . '+</bold></blue>';
+    my $line2 = '<blue><bold>|</bold></blue>' .
+                (' ')x39 . '<yellow><bold>' .
+                sprintf("%-15s [%4d BE]", $HIJRI_MONTHS->[$month], $year) .
+                '</bold></yellow>' . (' ')x40 . '<blue><bold>|</bold></blue>';
+    my $line3 = '<blue><bold>+';
 
-    my $wjd        = floor($julian - 0.5) + 0.5;
-    my $depoch     = $wjd - $GREGORIAN_EPOCH;
-    my $quadricent = floor($depoch / 146097);
-    my $dqc        = $depoch % 146097;
-    my $cent       = floor($dqc / 36524);
-    my $dcent      = $dqc % 36524;
-    my $quad       = floor($dcent / 1461);
-    my $dquad      = $dcent % 1461;
-    my $yindex     = floor($dquad / 365);
-    my $yyyy       = ($quadricent * 400) + ($cent * 100) + ($quad * 4) + $yindex;
+    for(1..7) {
+        $line3 .= ('-')x(14) . '+';
+    }
+    $line3 .= '</bold></blue>';
 
-    $yyyy++ unless (($cent == 4) || ($yindex == 4));
+    my $line4 = '<blue><bold>|</bold></blue>' .
+                join("<blue><bold>|</bold></blue>", @$HIJRI_DAYS) .
+                '<blue><bold>|</bold></blue>';
 
-    my $yearday = $wjd - _gregorian_to_julian($yyyy, 1, 1);
-    my $leapadj = (($wjd < _gregorian_to_julian($yyyy, 3, 1)) ? 0 : ((_is_leap($yyyy) ? 1 : 2)));
-    my $mm      = floor(((($yearday + $leapadj) * 12) + 373) / 367);
-    my $dd      = ($wjd - _gregorian_to_julian($yyyy, $mm, 1)) + 1;
-
-    return ($yyyy, $mm, $dd);
-}
-
-sub _is_leap {
-    my ($yyyy) = @_;
-
-    return (($yyyy % 4) == 0) &&
-            (!((($yyyy % 100) == 0) && (($yyyy % 400) != 0)));
-}
-
-# days: Total number of days in the given month mm.
-sub _add_day {
-    my ($days, $dd, $mm, $yyyy) = @_;
-
-    return unless (defined($dd) && defined($mm) && defined($yyyy));
-
-    $dd++;
-    if ($dd >= 29)
-    {
-        if ($dd > $days)
-        {
-            $dd = 1;
-            $mm++;
-            if ($mm > 12)
-            {
-                $mm = 1;
-                $yyyy++;
+    my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
+    if ($start_index % 7 != 0) {
+        $calendar .= '<blue><bold>|</bold></blue>              ';
+        map { $calendar .= "               " } (2..($start_index %= 7));
+    }
+    foreach (1 .. $days) {
+        $calendar .= sprintf("<blue><bold>|</bold></blue><cyan><bold>%13d </bold></cyan>", $_);
+        if ($_ != $days) {
+            $calendar .= "<blue><bold>|</bold></blue>\n" . $line3 . "\n"
+                unless (($start_index + $_) % 7);
+        }
+        elsif ($_ == $days) {
+            my $x = 7 - (($start_index + $_) % 7);
+            if (($x >= 2) && ($x != 7)) {
+                $calendar .= '<blue><bold>|</bold></blue>              ';
+                map { $calendar .= ' 'x15 } (1..$x-1);
             }
         }
     }
-    return ($dd, $mm, $yyyy);
-}
 
-sub _validate_date {
-    my ($yyyy, $mm, $dd) = @_;
+    $calendar = sprintf("%s<blue><bold>|</bold></blue>\n%s\n", $calendar, $line3);
 
-    die("ERROR: Invalid year [$yyyy].\n")
-        unless (defined($yyyy) && ($yyyy =~ /^\d{4}$/) && ($yyyy > 0));
-    die("ERROR: Invalid month [$mm].\n")
-        unless (defined($mm) && ($mm =~ /^\d{1,2}$/) && ($mm >= 1) && ($mm <= 12));
-    die("ERROR: Invalid day [$dd].\n")
-        unless (defined($dd) && ($dd =~ /^\d{1,2}$/) && ($dd >= 1) && ($dd <= 30));
+    return Term::ANSIColor::Markup->colorize($calendar);
 }
 
 =head1 AUTHOR
