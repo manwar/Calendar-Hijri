@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.11';
+$Calendar::Hijri::VERSION = '0.12';
 
 =head1 NAME
 
@@ -8,11 +8,10 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
-use Time::Local;
 use Data::Dumper;
 use Term::ANSIColor::Markup;
 use Date::Hijri::Simple;
@@ -98,7 +97,7 @@ NOTE: The Hijri date produced by this module can have +1/-1 day error.
 
 =head2 current()
 
-Returns current month of the Persian calendar.
+Returns current month of the Hijri calendar.
 
     use strict; use warnings;
     use Calendar::Hijri;
@@ -195,8 +194,8 @@ sub _calendar {
         }
         elsif ($_ == $days) {
             my $x = 7 - (($start_index + $_) % 7);
+            $calendar .= '<blue><bold>|</bold></blue>              ';
             if (($x >= 2) && ($x != 7)) {
-                $calendar .= '<blue><bold>|</bold></blue>              ';
                 map { $calendar .= ' 'x15 } (1..$x-1);
             }
         }

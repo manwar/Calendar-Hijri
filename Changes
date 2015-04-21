@@ -1,5 +1,8 @@
 Revision history for Calendar-Hijri
 
+0.12  Tue Apr 21 13:50:00 2015
+      - Fixed the bug in the method _calendar() the last cell is empty.
+
 0.11  Sun Apr 19 11:15:00 2015
       - Complete re-write using Moo with unit tests.
 
