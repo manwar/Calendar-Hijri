@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.12';
+$Calendar::Hijri::VERSION = '0.13';
 
 =head1 NAME
 
@@ -8,34 +8,29 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
 use Data::Dumper;
 use Term::ANSIColor::Markup;
 use Date::Hijri::Simple;
-use Date::Utils qw(
-    $HIJRI_YEAR
-    $HIJRI_MONTH
-    $HIJRI_MONTHS
-    $HIJRI_DAYS
-
-    julian_to_hijri
-    gregorian_to_julian
-    days_in_hijri_month_year
-);
 
 use Moo;
 use namespace::clean;
 
 use overload q{""} => 'as_string', fallback => 1;
 
-has year  => (is => 'rw', isa => $HIJRI_YEAR,  predicate => 1);
-has month => (is => 'rw', isa => $HIJRI_MONTH, predicate => 1);
+has year  => (is => 'rw', predicate => 1);
+has month => (is => 'rw', predicate => 1);
+
+with 'Date::Utils::Hijri';
 
 sub BUILD {
     my ($self) = @_;
+
+    $self->validate_year($self->year)   if $self->has_year;
+    $self->validate_month($self->month) if $self->has_month;
 
     unless ($self->has_year && $self->has_month) {
         my $date = Date::Hijri::Simple->new;
@@ -110,7 +105,7 @@ sub current {
     my ($self) = @_;
 
     my $date = Date::Hijri::Simple->new;
-    return _calendar($date->year, $date->month);
+    return $self->_calendar($date->year, $date->month);
 }
 
 =head2 from_gregorian()
@@ -127,7 +122,7 @@ Converts given Gregorian date to Hijri date.
 sub from_gregorian {
     my ($self, $year, $month, $day) = @_;
 
-    return $self->from_julian(gregorian_to_julian($year, $month, $day));
+    return $self->from_julian($self->gregorian_to_julian($year, $month, $day));
 }
 
 =head2 from_julian($julian_date)
@@ -144,14 +139,14 @@ Returns Hijri month calendar in which the given julian date falls in.
 sub from_julian {
     my ($self, $julian) = @_;
 
-    my ($year, $month, $day) = julian_to_hijri($julian);
-    return _calendar($year, $month);
+    my ($year, $month, $day) = $self->julian_to_hijri($julian);
+    return $self->_calendar($year, $month);
 }
 
 sub as_string {
     my ($self) = @_;
 
-    return _calendar($self->year, $self->month);
+    return $self->_calendar($self->year, $self->month);
 }
 
 #
@@ -159,16 +154,16 @@ sub as_string {
 # PRIVATE METHODS
 
 sub _calendar {
-    my ($year, $month) = @_;
+    my ($self, $year, $month) = @_;
 
     my $date = Date::Hijri::Simple->new({ year => $year, month => $month, day => 1 });
     my $start_index = $date->day_of_week;
-    my $days = days_in_hijri_month_year($month, $year);
+    my $days = $self->days_in_hijri_month_year($month, $year);
 
     my $line1 = '<blue><bold>+' . ('-')x104 . '+</bold></blue>';
     my $line2 = '<blue><bold>|</bold></blue>' .
                 (' ')x39 . '<yellow><bold>' .
-                sprintf("%-15s [%4d BE]", $HIJRI_MONTHS->[$month], $year) .
+                sprintf("%-15s [%4d BE]", $self->hijri_months->[$month], $year) .
                 '</bold></yellow>' . (' ')x40 . '<blue><bold>|</bold></blue>';
     my $line3 = '<blue><bold>+';
 
@@ -178,7 +173,7 @@ sub _calendar {
     $line3 .= '</bold></blue>';
 
     my $line4 = '<blue><bold>|</bold></blue>' .
-                join("<blue><bold>|</bold></blue>", @$HIJRI_DAYS) .
+                join("<blue><bold>|</bold></blue>", @{$self->hijri_days}) .
                 '<blue><bold>|</bold></blue>';
 
     my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";

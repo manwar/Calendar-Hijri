@@ -1,5 +1,8 @@
 Revision history for Calendar-Hijri
 
+0.13  Thu Apr 23 23:40:00 2015
+      - Re-structured and consumed Date::Utils::Hijri as Moo Role.
+
 0.12  Tue Apr 21 13:50:00 2015
       - Fixed the bug in the method _calendar() the last cell is empty.
 
