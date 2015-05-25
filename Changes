@@ -1,5 +1,19 @@
 Revision history for Calendar-Hijri
 
+0.14  Mon May 25 03:05:00 2015
+      - Removed the dependency on Date::Utils::Hijri.
+      - Upgraded the pre-requisite Date::Hijri::Simple v0.03.
+      - Fine tuned method BUILD().
+      - Fine tuned method current().
+      - Fine tuned method from_julian().
+      - Updated method _calendar().
+      - Added sample calendar to the section "SYNOPSIS".
+      - Added sample code to the section "SYNOPSIS".
+      - Updated pod description of method from_gregorian().
+      - Removed sample code from pod document for method current().
+      - Removed sample code from pod document for method from_gregorian().
+      - Removed sample code from pod document for method from_julian().
+
 0.13  Thu Apr 23 23:40:00 2015
       - Re-structured and consumed Date::Utils::Hijri as Moo Role.
 

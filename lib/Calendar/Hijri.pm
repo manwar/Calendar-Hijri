@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.13';
+$Calendar::Hijri::VERSION = '0.14';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.13
+Version 0.14
 
 =cut
 
@@ -23,19 +23,17 @@ use overload q{""} => 'as_string', fallback => 1;
 
 has year  => (is => 'rw', predicate => 1);
 has month => (is => 'rw', predicate => 1);
-
-with 'Date::Utils::Hijri';
+has date  => (is => 'ro', default   => sub { Date::Hijri::Simple->new });
 
 sub BUILD {
     my ($self) = @_;
 
-    $self->validate_year($self->year)   if $self->has_year;
-    $self->validate_month($self->month) if $self->has_month;
+    $self->date->validate_year($self->year)   if $self->has_year;
+    $self->date->validate_month($self->month) if $self->has_month;
 
     unless ($self->has_year && $self->has_month) {
-        my $date = Date::Hijri::Simple->new;
-        $self->year($date->year);
-        $self->month($date->month);
+        $self->year($self->date->year);
+        $self->month($self->date->month);
     }
 }
 
@@ -54,6 +52,40 @@ Because the year in the Hijri  calendar is shorter than a solar year, the  month
 drift with respect to the seasons, in a cycle 32.50 years.
 
 NOTE: The Hijri date produced by this module can have +1/-1 day error.
+
++--------------------------------------------------------------------------------------------------------+
+|                                       Sha'aban        [1436 BE]                                        |
++--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+|      al-Ahad |   al-Ithnayn | ath-Thulatha |     al-Arbia |    al-Khamis |    al-Jumuah |      as-Sabt |
++--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+|                                            |            1 |            2 |            3 |            4 |
++--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+|            5 |            6 |            7 |            8 |            9 |           10 |           11 |
++--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+|           12 |           13 |           14 |           15 |           16 |           17 |           18 |
++--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+|           19 |           20 |           21 |           22 |           23 |           24 |           25 |
++--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+|           26 |           27 |           28 |           29 |                                            |
++--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+
+=head1 SYNOPSIS
+
+    use strict; use warnings;
+    use Calendar::Hijri;
+
+    # prints current hijri month calendar.
+    print Calendar::Hijri->new, "\n";
+    print Calendar::Hijri->new->current, "\n";
+
+    # prints hijri month calendar for the first month of year 1436.
+    print Calendar::Hijri->new({ month => 1, year => 1436 }), "\n";
+
+    # prints hijri month calendar in which the given gregorian date falls in.
+    print Calendar::Hijri->new->from_gregorian(2015, 1, 14), "\n";
+
+    # prints hijri month calendar in which the given julian date falls in.
+    print Calendar::Hijri->new->from_julian(2457102.5), "\n";
 
 =head1 HIJRI MONTHS
 
@@ -94,28 +126,17 @@ NOTE: The Hijri date produced by this module can have +1/-1 day error.
 
 Returns current month of the Hijri calendar.
 
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    print Calendar::Hijri->new->current, "\n";
-
 =cut
 
 sub current {
     my ($self) = @_;
 
-    my $date = Date::Hijri::Simple->new;
-    return $self->_calendar($date->year, $date->month);
+    return $self->_calendar($self->date->year, $self->date->month);
 }
 
 =head2 from_gregorian()
 
-Converts given Gregorian date to Hijri date.
-
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    print Calendar::Hijri->new->from_gregorian(2015, 4, 19);
+Returns Hijri month calendar in which the given gregorian date falls in.
 
 =cut
 
@@ -129,18 +150,13 @@ sub from_gregorian {
 
 Returns Hijri month calendar in which the given julian date falls in.
 
-    use strict; use warnings;
-    use Calendar::Hijri;
-
-    print Calendar::Hijri->new->from_julian(2457102.5), "\n";
-
 =cut
 
 sub from_julian {
     my ($self, $julian) = @_;
 
-    my ($year, $month, $day) = $self->julian_to_hijri($julian);
-    return $self->_calendar($year, $month);
+    my $date = $self->date->from_julian($julian);
+    return $self->_calendar($date->year, $date->month);
 }
 
 sub as_string {
@@ -158,12 +174,12 @@ sub _calendar {
 
     my $date = Date::Hijri::Simple->new({ year => $year, month => $month, day => 1 });
     my $start_index = $date->day_of_week;
-    my $days = $self->days_in_hijri_month_year($month, $year);
+    my $days = $self->date->days_in_hijri_month_year($month, $year);
 
     my $line1 = '<blue><bold>+' . ('-')x104 . '+</bold></blue>';
     my $line2 = '<blue><bold>|</bold></blue>' .
                 (' ')x39 . '<yellow><bold>' .
-                sprintf("%-15s [%4d BE]", $self->hijri_months->[$month], $year) .
+                sprintf("%-15s [%4d BE]", $self->date->hijri_months->[$month], $year) .
                 '</bold></yellow>' . (' ')x40 . '<blue><bold>|</bold></blue>';
     my $line3 = '<blue><bold>+';
 
@@ -173,7 +189,7 @@ sub _calendar {
     $line3 .= '</bold></blue>';
 
     my $line4 = '<blue><bold>|</bold></blue>' .
-                join("<blue><bold>|</bold></blue>", @{$self->hijri_days}) .
+                join("<blue><bold>|</bold></blue>", @{$self->date->hijri_days}) .
                 '<blue><bold>|</bold></blue>';
 
     my $calendar = join("\n", $line1, $line2, $line3, $line4, $line3)."\n";
