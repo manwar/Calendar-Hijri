@@ -1,5 +1,8 @@
 Revision history for Calendar-Hijri
 
+0.15  Wed Jun 10 10:25:00 2015
+      - Updated method _calendar() to validate month and year.
+
 0.14  Mon May 25 03:05:00 2015
       - Removed the dependency on Date::Utils::Hijri.
       - Upgraded the pre-requisite Date::Hijri::Simple v0.03.

@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.14';
+$Calendar::Hijri::VERSION = '0.15';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.14
+Version 0.15
 
 =cut
 
@@ -171,6 +171,9 @@ sub as_string {
 
 sub _calendar {
     my ($self, $year, $month) = @_;
+
+    $self->date->validate_month($month);
+    $self->date->validate_year($year);
 
     my $date = Date::Hijri::Simple->new({ year => $year, month => $month, day => 1 });
     my $start_index = $date->day_of_week;
