@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.15';
+$Calendar::Hijri::VERSION = '0.16';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.15
+Version 0.16
 
 =cut
 
@@ -143,7 +143,7 @@ Returns Hijri month calendar in which the given gregorian date falls in.
 sub from_gregorian {
     my ($self, $year, $month, $day) = @_;
 
-    return $self->from_julian($self->gregorian_to_julian($year, $month, $day));
+    return $self->from_julian($self->date->gregorian_to_julian($year, $month, $day));
 }
 
 =head2 from_julian($julian_date)
