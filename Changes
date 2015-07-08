@@ -1,5 +1,8 @@
 Revision history for Calendar-Hijri
 
+0.19  Wed Jul 08 09:05:00 2015
+      - Upgraded to use Date::Hijri::Simple v0.07.
+
 0.18  Wed Jul 01 10:20:00 2015
       - Fixed the pod document showing sample Hijri Calendar.
 
