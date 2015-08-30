@@ -1,5 +1,8 @@
 Revision history for Calendar-Hijri
 
+0.21  Sun Aug 30 11:30:00 2015
+      - Upgraded to use Date::Hijri::Simple v0.09.
+
 0.20  Fri Jul 17 12:40:00 2015
       - Upgraded to use Date::Hijri::Simple v0.08.
       - Making use of the method get_calendar() provided by Date::Hijri::Simple.
