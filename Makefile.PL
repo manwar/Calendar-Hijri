@@ -11,7 +11,6 @@ WriteMakefile(
     VERSION_FROM       => 'lib/Calendar/Hijri.pm',
     ABSTRACT_FROM      => 'lib/Calendar/Hijri.pm',
     LICENSE            => 'artistic_2',
-    PL_FILES           => {},
     MIN_PERL_VERSION   => 5.006,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
@@ -23,6 +22,7 @@ WriteMakefile(
         'Moo'                 => '2.000000',
         'namespace::clean'    => '0.24',
         'Date::Hijri::Simple' => '0.09',
+        'Module::Pluggable'   => '5.1',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Hijri-*' },
@@ -31,8 +31,8 @@ WriteMakefile(
         resources => {
             repository => {
                 type => 'git',
-                url  => 'https://github.com/Manwar/Calendar-Hijri.git',
-                web  => 'https://github.com/Manwar/Calendar-Hijri',
+                url  => 'https://github.com/manwar/Calendar-Hijri.git',
+                web  => 'https://github.com/manwar/Calendar-Hijri',
             },
         }})
      : ()

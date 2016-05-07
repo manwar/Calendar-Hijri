@@ -1,4 +1,9 @@
-Revision history for Calendar-Hijri
+Revision history for Calendar::Hijri
+
+0.22  Sat May 07 13:10:00 2016
+      - Added method as_svg() using the plugin Calendar::Plugin::Renderer.
+      - Added section "SEE ALSO".
+      - Updated copyright year information.
 
 0.21  Sun Aug 30 11:30:00 2015
       - Upgraded to use Date::Hijri::Simple v0.09.

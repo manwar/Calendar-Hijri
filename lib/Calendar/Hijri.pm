@@ -1,6 +1,7 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION = '0.21';
+$Calendar::Hijri::VERSION   = '0.22';
+$Calendar::Hijri::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
 
@@ -8,21 +9,26 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.21
+Version 0.22
 
 =cut
 
+use 5.006;
 use Data::Dumper;
-use Date::Hijri::Simple;
 
+use Date::Hijri::Simple;
 use Moo;
 use namespace::clean;
 
+use Role::Tiny qw();
+use Module::Pluggable search_path => ['Calendar::Plugin'], require => 1, max_depth => 3;
+
 use overload q{""} => 'as_string', fallback => 1;
 
-has year  => (is => 'rw', predicate => 1);
-has month => (is => 'rw', predicate => 1);
-has date  => (is => 'ro', default   => sub { Date::Hijri::Simple->new });
+has year    => (is => 'rw', predicate => 1);
+has month   => (is => 'rw', predicate => 1);
+has date    => (is => 'ro', default   => sub { Date::Hijri::Simple->new });
+has _plugin => (is => 'rw', default   => sub { 0 });
 
 sub BUILD {
     my ($self) = @_;
@@ -33,6 +39,13 @@ sub BUILD {
     unless ($self->has_year && $self->has_month) {
         $self->year($self->date->year);
         $self->month($self->date->month);
+    }
+
+    my $plugins = [ Calendar::Hijri::plugins ];
+    foreach (@{$plugins}) {
+        next unless ($_ eq 'Calendar::Plugin::Renderer');
+        Role::Tiny->apply_roles_to_object($self, $_);
+        $self->_plugin(1);
     }
 }
 
@@ -83,6 +96,10 @@ drift with respect to the seasons, in a cycle 32.50 years.
 
     # prints hijri month calendar in which the given julian date falls in.
     print Calendar::Hijri->new->from_julian(2457102.5), "\n";
+
+    # prints current month hijri calendar in SVG format if the plugin
+    # Calendar::Plugin::Renderer v0.04 or above is installed.
+    print Calendar::Hijri->new->as_svg;
 
 =head1 HIJRI MONTHS
 
@@ -156,6 +173,38 @@ sub from_julian {
     return $self->date->get_calendar($date->month, $date->year);
 }
 
+=head2 as_svg($month, $year)
+
+Returns calendar for the given C<$month> and C<$year> rendered  in SVG format. If
+C<$month> and C<$year> missing, it would return current calendar month.The Plugin
+L<Calendar::Plugin::Renderer> v0.06 or above must be installed for this to work.
+
+=cut
+
+sub as_svg {
+    my ($self, $month, $year) = @_;
+
+    die "ERROR: Plugin Calendar::Plugin::Renderer v0.06 or above is missing,".
+        "please install it first.\n" unless ($self->_plugin);
+
+    if (defined $month && defined $year) {
+        $self->date->validate_month($month);
+        $self->date->validate_year($year);
+    }
+    else {
+        $month = $self->month;
+        $year  = $self->year;
+    }
+
+    my $date = Date::Hijri::Simple->new({ year => $year, month => $month, day => 1 });
+
+    return $self->svg_calendar({
+        start_index   => $date->day_of_week + 1,
+        month_name    => $date->hijri_months->[$month],
+        days          => $date->days_in_month_year($month, $year),
+        year          => $year });
+}
+
 sub as_string {
     my ($self) = @_;
 
@@ -168,7 +217,21 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 REPOSITORY
 
-L<https://github.com/Manwar/Calendar-Hijri>
+L<https://github.com/manwar/Calendar-Hijri>
+
+=head1 SEE ALSO
+
+=over 4
+
+=item L<Calendar::Bahai>
+
+=item L<Calendar::Gregorian>
+
+=item L<Calendar::Persian>
+
+=item L<Calendar::Saka>
+
+=back
 
 =head1 BUGS
 
@@ -207,7 +270,7 @@ L<http://search.cpan.org/dist/Calendar-Hijri/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2011 - 2015 Mohammad S Anwar.
+Copyright (C) 2011 - 2016 Mohammad S Anwar.
 
 This program  is  free software; you can redistribute it and / or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain  a copy of the full
