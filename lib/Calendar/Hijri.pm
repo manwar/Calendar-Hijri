@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION   = '0.22';
+$Calendar::Hijri::VERSION   = '0.23';
 $Calendar::Hijri::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.22
+Version 0.23
 
 =cut
 
@@ -145,7 +145,7 @@ Returns current month of the Hijri calendar.
 sub current {
     my ($self) = @_;
 
-    return $self->date->get_calendar($self->date->month, $self->date->year);
+    return $self->date->get_calendar;
 }
 
 =head2 from_gregorian()
@@ -170,7 +170,7 @@ sub from_julian {
     my ($self, $julian) = @_;
 
     my $date = $self->date->from_julian($julian);
-    return $self->date->get_calendar($date->month, $date->year);
+    return $date->get_calendar;
 }
 
 =head2 as_svg($month, $year)
@@ -190,6 +190,10 @@ sub as_svg {
     if (defined $month && defined $year) {
         $self->date->validate_month($month);
         $self->date->validate_year($year);
+
+        if ($month =~ /^[A-Z\-\s\']+$/i) {
+            $month = $self->date->get_month_number($month);
+        }
     }
     else {
         $month = $self->month;
@@ -200,7 +204,7 @@ sub as_svg {
 
     return $self->svg_calendar({
         start_index   => $date->day_of_week + 1,
-        month_name    => $date->hijri_months->[$month],
+        month_name    => $date->get_month_name,
         days          => $date->days_in_month_year($month, $year),
         year          => $year });
 }

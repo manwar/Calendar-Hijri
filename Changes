@@ -1,5 +1,10 @@
 Revision history for Calendar::Hijri
 
+0.23  Wed May 18 13:45:00 2016
+      - Upgraded to use Date::Hijri::Simple v0.12.
+      - Updated method as_svg() to handle month name.
+      - Refactored method current() and method from_gregorian().
+
 0.22  Sat May 07 13:10:00 2016
       - Added method as_svg() using the plugin Calendar::Plugin::Renderer.
       - Added section "SEE ALSO".
