@@ -9,3 +9,5 @@ t/00-load.t
 t/calendar-hijri.t
 t/manifest.t
 t/pod.t
+t/hijri.xml
+t/fake-hijri.xml

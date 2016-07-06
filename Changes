@@ -1,5 +1,11 @@
 Revision history for Calendar::Hijri
 
+0.24  Wed Jul 06 15:00:00 2016
+      - Added method as_text().
+      - Updated method as_svg() with regard to start index.
+      - Added dependency on Calendar::Plugin::Renderer v0.07.
+      - Added test for method as_svg().
+
 0.23  Wed May 18 13:45:00 2016
       - Upgraded to use Date::Hijri::Simple v0.12.
       - Updated method as_svg() to handle month name.
