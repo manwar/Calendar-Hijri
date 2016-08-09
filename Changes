@@ -1,5 +1,8 @@
 Revision history for Calendar::Hijri
 
+0.25  Tue Aug 09 10:50:00 2016
+      - Upgraded to use Date::Hijri::Simple v0.15.
+
 0.24  Wed Jul 06 15:00:00 2016
       - Added method as_text().
       - Updated method as_svg() with regard to start index.
