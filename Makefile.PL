@@ -30,6 +30,9 @@ WriteMakefile(
     clean => { FILES => 'Calendar-Hijri-*' },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
+        provides    => {
+            'Calendar::Hijri' => { file => 'lib/Calendar/Hijri.pm', version => '0.26' },
+        },
         resources => {
             repository => {
                 type => 'git',
