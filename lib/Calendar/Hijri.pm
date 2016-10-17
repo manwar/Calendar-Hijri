@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION   = '0.26';
+$Calendar::Hijri::VERSION   = '0.27';
 $Calendar::Hijri::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.26
+Version 0.27
 
 =cut
 
@@ -68,6 +68,9 @@ drift with respect to the seasons, in a cycle 32.50 years.
     +--------------+--------------+--------------+--------------+--------------+--------------+--------------+
     |           26 |           27 |           28 |           29 |                                            |
     +--------------+--------------+--------------+--------------+--------------+--------------+--------------+
+
+The package L<App::calendr> provides command line tool  C<calendr> to display the
+supported calendars on the terminal.
 
 =head1 SYNOPSIS
 
