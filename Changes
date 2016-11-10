@@ -1,5 +1,8 @@
 Revision history for Calendar::Hijri
 
+0.28  Thu Nov 10 10:05:00 2016
+      - Upgraded to use Date::Hijri::Simple v0.16.
+
 0.27  Mon Oct 17 11:40:00 2016
       - Added dependency on Calendar::Plugin::Renderer v0.11.
 
