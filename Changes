@@ -1,5 +1,8 @@
 Revision history for Calendar::Hijri
 
+0.29  Sun Dec 11 07:40:00 2016
+      - Added test scripts (t/meta-json.t and t/meta-yml.t).
+
 0.28  Thu Nov 10 10:05:00 2016
       - Upgraded to use Date::Hijri::Simple v0.16.
 
