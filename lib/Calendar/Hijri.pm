@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION   = '0.29';
+$Calendar::Hijri::VERSION   = '0.30';
 $Calendar::Hijri::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.29
+Version 0.30
 
 =cut
 
