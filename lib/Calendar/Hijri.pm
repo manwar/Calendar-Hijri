@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION   = '0.30';
+$Calendar::Hijri::VERSION   = '0.31';
 $Calendar::Hijri::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.30
+Version 0.31
 
 =cut
 
@@ -93,6 +93,9 @@ supported calendars on the terminal.
     # prints current month hijri calendar in SVG format.
     print Calendar::Hijri->new->as_svg;
 
+    # prints current month hijri calendar in text format.
+    print Calendar::Hijri->new->as_text;
+
 =head1 HIJRI MONTHS
 
     +--------+------------------------------------------------------------------+
@@ -167,7 +170,8 @@ sub from_julian {
 
 =head2 as_text($month, $year)
 
-Returns color coded Hijri calendar for the given C<$month> and C<$year>.
+Returns  color  coded  Hijri  calendar  for  the given C<$month> and C<$year>. If
+C<$month> and C<$year> missing, it would return current calendar month.
 
 =cut
 

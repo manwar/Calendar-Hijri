@@ -1,5 +1,9 @@
 Revision history for Calendar::Hijri
 
+0.31  Fri Dec 30 11:45:00 2016
+      - Added sample code for method as_text() in the SYNOPSIS section.
+      - Updated pod document for method as_text().
+
 0.30  Mon Dec 19 12:50:00 2016
       - Upgraded to use Date::Hijri::Simple v0.17.
 
