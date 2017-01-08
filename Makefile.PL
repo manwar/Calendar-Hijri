@@ -24,14 +24,14 @@ WriteMakefile(
         'Moo'                        => '2.000000',
         'namespace::clean'           => '0.24',
         'Date::Hijri::Simple'        => '0.17',
-        'Calendar::Plugin::Renderer' => '0.11',
+        'Calendar::Plugin::Renderer' => '0.12',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Calendar-Hijri-*' },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
         provides    => {
-            'Calendar::Hijri' => { file => 'lib/Calendar/Hijri.pm', version => '0.31' },
+            'Calendar::Hijri' => { file => 'lib/Calendar/Hijri.pm', version => '0.32' },
         },
         resources => {
             repository => {

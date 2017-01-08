@@ -1,6 +1,6 @@
 package Calendar::Hijri;
 
-$Calendar::Hijri::VERSION   = '0.31';
+$Calendar::Hijri::VERSION   = '0.32';
 $Calendar::Hijri::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Calendar::Hijri - Interface to Islamic Calendar.
 
 =head1 VERSION
 
-Version 0.31
+Version 0.32
 
 =cut
 
@@ -215,29 +215,6 @@ sub as_string {
     my ($self) = @_;
 
     return $self->as_text($self->month, $self->year);
-}
-
-#
-#
-# PRIVATE METHODS
-
-sub validate_params {
-    my ($self, $month, $year) = @_;
-
-    if (defined $month && defined $year) {
-        $self->date->validate_month($month);
-        $self->date->validate_year($year);
-
-        if ($month !~ /^\d+$/) {
-            $month = $self->date->get_month_number($month);
-        }
-    }
-    else {
-        $month = $self->month;
-        $year  = $self->year;
-    }
-
-    return ($month, $year);
 }
 
 =head1 AUTHOR

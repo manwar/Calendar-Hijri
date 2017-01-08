@@ -1,5 +1,9 @@
 Revision history for Calendar::Hijri
 
+0.32  Sun Jan 08 03:40:00 2017
+      - Added dependency on Calendar::Plugin::Renderer v0.12.
+      - Removed method validate_params(), no longer required.
+
 0.31  Fri Dec 30 11:45:00 2016
       - Added sample code for method as_text() in the SYNOPSIS section.
       - Updated pod document for method as_text().
