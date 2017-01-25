@@ -1,5 +1,8 @@
 Revision history for Calendar::Hijri
 
+0.33  Wed Jan 25 11:30:00 2017
+      - Upgraded to use Date::Hijri::Simple v0.18.
+
 0.32  Sun Jan 08 03:40:00 2017
       - Added dependency on Calendar::Plugin::Renderer v0.12.
       - Removed method validate_params(), no longer required.
